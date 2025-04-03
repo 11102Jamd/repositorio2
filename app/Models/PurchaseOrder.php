@@ -38,18 +38,23 @@ class PurchaseOrder extends Model
             $createdInputs=[];
             foreach($inputsData as $inputData)
             {
+                $unitMeasurementGrams = $inputData['UnitMeasurementGrams'] ?? null;
+
                 $input = new Input([
                     'InputName'=> $inputData['InputName'],
-                    'UnitMeasurement'=> $inputData['UnitMeasurement'],
                     'InitialQuantity'=> $inputData['InitialQuantity'],
+                    'UnitMeasurement'=> $inputData['UnitMeasurement'],
                     'CurrentStock'=>$inputData['CurrentStock'],
+                    'UnitMeasurementGrams' => $unitMeasurementGrams,
                     'UnityPrice'=>$inputData['UnityPrice']
                 ]);
+
+                $input->ConvertUnit();
                 $this->Inputs()->save($input);
 
                 $total += $inputData['InitialQuantity'] * $inputData['UnityPrice'];
 
-                $createInputs[] = $input;
+                $createdInputs[] = $input;
             }
             $this->update(['PurchaseTotal' => $total]);
 

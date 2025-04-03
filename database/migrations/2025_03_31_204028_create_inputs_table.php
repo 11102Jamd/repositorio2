@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('ID_purchase_order')->constrained('purchase_order')->onDelete('cascade')->onUpdate('cascade');
             $table->string('InputName',80);
-            $table->string('UnitMeasurement',10);
             $table->integer('InitialQuantity');
+            $table->string('UnitMeasurement',10);
             $table->integer('CurrentStock');
+            $table->string('UnitMeasurementGrams',10);
             $table->double('UnityPrice',10,3);
             $table->timestamps();
         });

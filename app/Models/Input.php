@@ -12,14 +12,31 @@ class Input extends Model
     protected $fillable = [
         'ID_purchase_order',
         'InputName',
-        'UnitMeasurement',
         'InitialQuantity',
+        'UnitMeasurement',
         'CurrentStock',
+        'UnitMeasurementGrams',
         'UnityPrice'
     ];
 
     public function PurchaseOrders(): BelongsTo
     {
         return $this->belongsTo(PurchaseOrder::class);
+    }
+
+    public function ConvertUnit()
+    {
+        if ($this->UnitMeasurement == 'Kg') {
+            $this->UnitMeasurementGrams = 'g';
+            $this->CurrentStock *= 1000;
+            return true;
+
+        } else if ($this->UnitMeasurement == 'lb') {
+            $this->UnitMeasurementGrams = 'g';
+            $this->CurrentStock *= 500;
+            return true;
+        }
+
+        return false;
     }
 }
