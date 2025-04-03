@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\PurchaseOrder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PurchaseOrderController extends BaseCrudController
 {
@@ -22,6 +24,7 @@ class PurchaseOrderController extends BaseCrudController
 
     public function store(Request $request)
     {
+        DB::beginTransaction();
         try {
             $validatedData = $this->validateRequest($request);
 
@@ -31,11 +34,16 @@ class PurchaseOrderController extends BaseCrudController
             ]);
 
             $order->AddInputs($validatedData['inputs']);
+
+            DB::commit();
+            
             return response()->json([
                 'Message' => "pedido creado exitosamente",
                 'OrdenCompra' => $order->fresh()->load('inputs')
             ], 201);
         } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error("Error en PurchaseOrder@Controller: " . $th->getMessage());
             return response()->json([
                 'error' => 'Datos inválidos',
                 'message' => $th->getMessage(),

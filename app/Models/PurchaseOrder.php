@@ -21,47 +21,45 @@ class PurchaseOrder extends Model
         'PurchaseTotal' => 0
     ];
 
-    public function Supplier():BelongsTo
+    public function Supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class);
     }
 
-    public function Inputs():HasMany
+    public function Inputs(): HasMany
     {
         return $this->hasMany(Input::class, 'ID_purchase_order');
     }
 
     public function AddInputs(array $inputsData)
     {
-        return DB::transaction(function () use ($inputsData){
-            $total=0;
-            $createdInputs=[];
-            foreach($inputsData as $inputData)
-            {
-                $unitMeasurementGrams = $inputData['UnitMeasurementGrams'] ?? null;
 
-                $input = new Input([
-                    'InputName'=> $inputData['InputName'],
-                    'InitialQuantity'=> $inputData['InitialQuantity'],
-                    'UnitMeasurement'=> $inputData['UnitMeasurement'],
-                    'CurrentStock'=>$inputData['CurrentStock'],
-                    'UnitMeasurementGrams' => $unitMeasurementGrams,
-                    'UnityPrice'=>$inputData['UnityPrice']
-                ]);
+        $total = 0;
+        $createdInputs = [];
+        foreach ($inputsData as $inputData) {
+            $unitMeasurementGrams = $inputData['UnitMeasurementGrams'] ?? null;
 
-                $input->ConvertUnit();
-                $this->Inputs()->save($input);
+            $input = new Input([
+                'InputName' => $inputData['InputName'],
+                'InitialQuantity' => $inputData['InitialQuantity'],
+                'UnitMeasurement' => $inputData['UnitMeasurement'],
+                'CurrentStock' => $inputData['CurrentStock'],
+                'UnitMeasurementGrams' => $unitMeasurementGrams,
+                'UnityPrice' => $inputData['UnityPrice']
+            ]);
 
-                $total += $inputData['InitialQuantity'] * $inputData['UnityPrice'];
+            $input->ConvertUnit();
+            $this->Inputs()->save($input);
 
-                $createdInputs[] = $input;
-            }
-            $this->update(['PurchaseTotal' => $total]);
+            $total += $inputData['InitialQuantity'] * $inputData['UnityPrice'];
 
-            return [
-                'order' => $this->fresh(),
-                'inputs' => $createdInputs
-            ];
-        } );
+            $createdInputs[] = $input;
+        }
+        $this->update(['PurchaseTotal' => $total]);
+
+        return [
+            'order' => $this->fresh(),
+            'inputs' => $createdInputs
+        ];
     }
 }
