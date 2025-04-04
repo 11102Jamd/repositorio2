@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\InputController;
 use App\Http\Controllers\ManufacturingController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
@@ -19,3 +20,5 @@ Route::apiResource('proveedores', SupplierController::class);
 Route::apiResource('compras', PurchaseOrderController::class);
 
 Route::apiResource('fabricacion', ManufacturingController::class);
+
+Route::apiResource('insumos', InputController::class);
