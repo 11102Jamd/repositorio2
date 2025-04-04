@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\OrderDetail;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -45,6 +47,28 @@ class OrderController extends BaseCrudController
                 'error' => 'Datos inválidos',
                 'message' => $th->getMessage(),
             ], 422);
+        }
+    }
+
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+        try {
+            $order = Order::with('OrderDetails')->findOrFail($id);
+            $order->RestoreStock();
+            $order->OrderDetails()->delete();
+            $order->delete();
+            DB::commit();
+            return response()->json([
+                'message'=>"Pedido eliminado exitosamente",
+                'stock'=>true
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message'=>"Error al eliminar pedido",
+                'error'=>$th->getMessage(),
+            ]);
         }
     }
 }

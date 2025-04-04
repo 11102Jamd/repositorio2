@@ -60,4 +60,14 @@ class Order extends Model
         $this->refresh();
         return $this;
     }
+
+    public function RestoreStock()
+    {
+        foreach ($this->OrderDetails as $detail) {
+            $product = Product::find($detail->ID_product);
+            if ($product) {
+                $product->increment('CurrentStock', $detail->RequestedQuantity);
+            }
+        }
+    }
 }
