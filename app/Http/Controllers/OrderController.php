@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends BaseCrudController
 {
@@ -19,6 +21,7 @@ class OrderController extends BaseCrudController
 
     public function store(Request $request)
     {
+        DB::beginTransaction();
         try {
             $validatedData = $this->validateRequest($request);
 
@@ -29,11 +32,15 @@ class OrderController extends BaseCrudController
 
             $order->AddDetails($validatedData['details']);
 
+            DB::commit();
+
             return response()->json([
                 'Message' => "pedido creado exitosamente",
                 'pedido' => $order->fresh()->load('OrderDetails')
             ], 201);
         } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error("Error en Manufacturing@Controller: " . $th->getMessage());
             return response()->json([
                 'error' => 'Datos inválidos',
                 'message' => $th->getMessage(),

@@ -20,6 +20,7 @@ class Manufacturing extends Model
     ];
 
     protected $attributes = [
+        'ManufactureProductG' => 0,
         'TotalCostProduction' => 0
     ];
 
@@ -36,7 +37,7 @@ class Manufacturing extends Model
     public function AddIngredients(array $recipes)
     {
         $total = 0;
-
+        $totalGrams = 0;
         foreach ($recipes as $recipe) {
             $input = Input::findOrFail($recipe['ID_inputs']);
 
@@ -51,6 +52,8 @@ class Manufacturing extends Model
             ]);
 
             $subtotal = $recipeModel->PriceQuantitySpent();
+            $totalGrams += $recipe['AmountSpent'];
+
             $recipeModel->update(['PriceQuantitySpent' => $subtotal]);
 
             $input->decrement('CurrentStock', $recipe['AmountSpent']);
@@ -58,6 +61,7 @@ class Manufacturing extends Model
         }
 
         $this->TotalCostProduction = $total + $this->Labour;
+        $this->ManufactureProductG = $totalGrams;
         $this->save();
 
         return $this->fresh()->load('recipes.Input');

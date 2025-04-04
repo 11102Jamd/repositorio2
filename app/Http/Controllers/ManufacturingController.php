@@ -14,7 +14,6 @@ class ManufacturingController extends BaseCrudController
         'ID_product' => 'required|exists:product,id',
         'ManufacturingTime' => 'required|integer|min:1', // En minutos
         'Labour' => 'required|numeric|min:0',
-        'ManufactureProductG' => 'required|numeric|min:0',
         'recipes' => 'required|array|min:1',
         'recipes.*.ID_inputs' => 'required|exists:inputs,id',
         'recipes.*.AmountSpent' => 'required|numeric|min:0.01',
@@ -30,8 +29,7 @@ class ManufacturingController extends BaseCrudController
             $manufacturing = $this->model::create([
                 'ID_product' => $validatedData['ID_product'],
                 'ManufacturingTime' => $validatedData['ManufacturingTime'],
-                'Labour' => $validatedData['Labour'],
-                'ManufactureProductG' => $validatedData['ManufactureProductG']
+                'Labour' => $validatedData['Labour']
             ]);
 
             $manufacturing->AddIngredients($validatedData['recipes']);

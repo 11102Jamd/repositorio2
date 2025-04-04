@@ -35,31 +35,29 @@ class Order extends Model
 
     public function AddDetails(array $details)
     {
-        return DB::transaction(function () use ($details) {
-            $total = 0;
+        $total = 0;
 
-            foreach ($details as $detail) {
-                $product = Product::findOrFail($detail['ID_product']);
+        foreach ($details as $detail) {
+            $product = Product::findOrFail($detail['ID_product']);
 
-                if ($product->CurrentStock < $detail['RequestedQuantity']) {
-                    throw new \Exception("Stock Insuficiente para {$product->ProductName}");
-                }
-
-                $subtotal = $product->UnityPrice * $detail['RequestedQuantity'];
-
-                $this->OrderDetails()->create([
-                    'ID_product' => $detail['ID_product'],
-                    'RequestedQuantity' => $detail['RequestedQuantity'],
-                    'PriceQuantity' => $subtotal,
-                ]);
-
-                $product->decrement('CurrentStock', $detail['RequestedQuantity']);
-                $total += $subtotal;
+            if ($product->CurrentStock < $detail['RequestedQuantity']) {
+                throw new \Exception("Stock Insuficiente para {$product->ProductName}");
             }
-            $this->OrderTotal = $total;
-            $this->save();
-            $this->refresh();
-            return $this;
-        });
+
+            $subtotal = $product->UnityPrice * $detail['RequestedQuantity'];
+
+            $this->OrderDetails()->create([
+                'ID_product' => $detail['ID_product'],
+                'RequestedQuantity' => $detail['RequestedQuantity'],
+                'PriceQuantity' => $subtotal,
+            ]);
+
+            $product->decrement('CurrentStock', $detail['RequestedQuantity']);
+            $total += $subtotal;
+        }
+        $this->OrderTotal = $total;
+        $this->save();
+        $this->refresh();
+        return $this;
     }
 }
