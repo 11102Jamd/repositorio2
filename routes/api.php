@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ManufacturingController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseOrderController;
@@ -17,3 +18,4 @@ Route::apiResource('proveedores', SupplierController::class);
 
 Route::apiResource('compras', PurchaseOrderController::class);
 
+Route::apiResource('fabricacion', ManufacturingController::class);

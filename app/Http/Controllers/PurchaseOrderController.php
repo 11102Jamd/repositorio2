@@ -16,9 +16,10 @@ class PurchaseOrderController extends BaseCrudController
         'OrderTotal' => 'sometimes|numeric|min:0',
         'inputs' => 'required|array|min:1',
         'inputs.*.InputName' => 'required|string|max:100',
-        'inputs.*.UnitMeasurement' => 'required|string|max:20',
         'inputs.*.InitialQuantity' => 'required|numeric|min:0',
+        'inputs.*.UnitMeasurement' => 'required|string|max:20',
         'inputs.*.CurrentStock' => 'required|numeric|min:0',
+        'inputs.*.UnitMeasurementGrams' => 'required|string|max:20',
         'inputs.*.UnityPrice' => 'required|numeric|min:0'
     ];
 
@@ -36,9 +37,9 @@ class PurchaseOrderController extends BaseCrudController
             $order->AddInputs($validatedData['inputs']);
 
             DB::commit();
-            
+
             return response()->json([
-                'Message' => "pedido creado exitosamente",
+                'Message' => "compra creado exitosamente",
                 'OrdenCompra' => $order->fresh()->load('inputs')
             ], 201);
         } catch (\Throwable $th) {

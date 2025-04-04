@@ -36,7 +36,8 @@ class Input extends Model
             $this->CurrentStock *= 500;
             return true;
         }
-
+        
         return false;
     }
+
 }
