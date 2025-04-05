@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Manufacturing;
+use App\Models\Recipe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -40,7 +41,6 @@ class ManufacturingController extends BaseCrudController
                 'Message' => "fabricacion creado exitosamente",
                 'OrdenCompra' => $manufacturing->fresh()->load('recipes')
             ], 201);
-
         } catch (\Throwable $th) {
             DB::rollBack();
             Log::error("Error en Manufacturing@Controller: " . $th->getMessage());
@@ -48,6 +48,33 @@ class ManufacturingController extends BaseCrudController
                 'error' => 'Datos inválidos',
                 'message' => $th->getMessage(),
             ], 422);
+        }
+    }
+
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+        try {
+            $manufacturing = Manufacturing::with('recipes')->findOrFail($id);
+
+            foreach ($manufacturing->recipes as $recipe) {
+                $recipe->RestoreStockInputs();
+            }
+
+            $manufacturing->recipes()->delete();
+            $manufacturing->delete();
+
+            DB::commit();
+            return response()->json([
+                'message' => "Fabricación eliminada exitosamente",
+                'stock' => true
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => "Error al eliminar fabricación",
+                'error' => $th->getMessage(),
+            ], 500);
         }
     }
 }

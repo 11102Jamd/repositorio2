@@ -48,6 +48,15 @@ class Recipe extends Model
 
         $PriceQuantitySpent = $AmountSpent * $input->UnityPrice;
 
-        return round($PriceQuantitySpent, 2); 
+        return round($PriceQuantitySpent, 2);
+    }
+
+    public function RestoreStockInputs()
+    {
+        $input = $this->Input;
+
+        if ($input) {
+            $input->increment('CurrentStock', $this->AmountSpent);
+        }
     }
 }
