@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use PhpParser\Node\Stmt\Return_;
 
 class Manufacturing extends Model
 {
@@ -20,6 +19,7 @@ class Manufacturing extends Model
     ];
 
     protected $attributes = [
+        'Labour' => 0,
         'ManufactureProductG' => 0,
         'TotalCostProduction' => 0
     ];
@@ -32,6 +32,17 @@ class Manufacturing extends Model
     public function recipes(): HasMany
     {
         return $this->hasMany(Recipe::class, 'ID_manufacturing');
+    }
+
+    public function CalculateLabour()
+    {
+        if ($this->ManufacturingTime != 0) {
+            $timeInHours = $this->ManufacturingTime / 60;
+            $this->Labour = $timeInHours * 10000;
+            $this->save();
+        }
+
+        return $this;
     }
 
     public function AddIngredients(array $recipes)
