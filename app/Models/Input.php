@@ -3,40 +3,43 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Input extends Model
 {
     protected $table = 'inputs';
 
     protected $fillable = [
-        'ID_purchase_order',
         'InputName',
+        'CurrentStock',
         'InitialQuantity',
         'UnitMeasurement',
-        'CurrentStock',
         'UnitMeasurementGrams',
         'UnityPrice'
     ];
 
-    public function PurchaseOrders(): BelongsTo
+    protected $attributes = [
+        'InitialQuantity' => 0,
+        'UnitMeasurement' => 'Kg',
+        'CurrentStock' => 0,
+        'UnitMeasurementGrams' => 'g',
+        'UnityPrice' => 0
+    ];
+
+    public function inputOrders(): HasMany
     {
-        return $this->belongsTo(PurchaseOrder::class);
+        return $this->hasMany(InputOrder::class, 'ID_input');
     }
 
-    public function ConvertUnit()
+    public function ConvertUnit($quantity, $unitMeasurement)
     {
-        if ($this->UnitMeasurement == 'Kg') {
-            $this->UnitMeasurementGrams = 'g';
-            $this->CurrentStock *= 1000;
-            return true;
-
-        } else if ($this->UnitMeasurement == 'lb') {
-            $this->UnitMeasurementGrams = 'g';
-            $this->CurrentStock *= 500;
-            return true;
+        switch ($unitMeasurement) {
+            case 'Kg':
+                return $quantity * 1000;
+            case 'lb':
+                return $quantity * 453.592;
+            default:
+                return $quantity;
         }
-
-        return false;
     }
 }

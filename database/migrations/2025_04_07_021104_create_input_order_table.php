@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('inputs', function (Blueprint $table) {
+        Schema::create('input_order', function (Blueprint $table) {
             $table->id();
-            $table->string('InputName',80);
-            $table->integer('InitialQuantity');
-            $table->string('UnitMeasurement',10);
-            $table->integer('CurrentStock');
-            $table->string('UnitMeasurementGrams',10);
-            $table->double('UnityPrice',10,3);
+            $table->foreignId('ID_purchase_order')->constrained('purchase_order')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('ID_input')->constrained('inputs')->onDelete('cascade')->onUpdate('cascade');
+            $table->double('PriceQuantity',10,3);
             $table->timestamps();
         });
     }
@@ -28,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('inputs');
+        Schema::dropIfExists('input_order');
     }
 };

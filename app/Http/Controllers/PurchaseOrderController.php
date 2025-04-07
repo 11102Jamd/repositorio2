@@ -13,13 +13,10 @@ class PurchaseOrderController extends BaseCrudController
     protected $validationRules = [
         'ID_supplier' => 'required|exists:supplier,id',
         'PurchaseOrderDate' => 'required|date',
-        'OrderTotal' => 'sometimes|numeric|min:0',
         'inputs' => 'required|array|min:1',
-        'inputs.*.InputName' => 'required|string|max:100',
+        'inputs.*.ID_input' => 'required|exists:inputs,id',
         'inputs.*.InitialQuantity' => 'required|numeric|min:0',
-        'inputs.*.UnitMeasurement' => 'required|string|max:20',
-        'inputs.*.CurrentStock' => 'required|numeric|min:0',
-        'inputs.*.UnitMeasurementGrams' => 'required|string|max:20',
+        'inputs.*.UnitMeasurement' => 'required|string|in:g,Kg,lb',
         'inputs.*.UnityPrice' => 'required|numeric|min:0'
     ];
 
@@ -29,18 +26,19 @@ class PurchaseOrderController extends BaseCrudController
         try {
             $validatedData = $this->validateRequest($request);
 
-            $order = $this->model::create([
+            $purchaseOrder = $this->model::create([
                 'ID_supplier' => $validatedData['ID_supplier'],
                 'PurchaseOrderDate' => $validatedData['PurchaseOrderDate']
             ]);
 
-            $order->AddInputs($validatedData['inputs']);
+            $result = $purchaseOrder->AddInputs($validatedData['inputs']);
 
             DB::commit();
 
             return response()->json([
-                'Message' => "compra creado exitosamente",
-                'OrdenCompra' => $order->fresh()->load('inputs')
+                'Message' => "Orden de compra creada exitosamente",
+                'OrdenCompra' => $result['order'],
+                'Insumos' => $result['input_orders']
             ], 201);
         } catch (\Throwable $th) {
             DB::rollBack();
