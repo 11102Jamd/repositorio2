@@ -14,7 +14,13 @@ class UserController extends BaseCrudController
         'surname1' => 'required|string|max:255',
         'surname2' => 'nullable|string|max:255',
         'email' => 'required|email|unique:users,email',
-        'password' => 'required|string|min:6',
+        'password' => 'nullable|string|min:6',
         'rol' => 'required|string'
     ];
+
+    public function update(Request $request, $id)
+    {
+        $this->validationRules['email'] = 'required|email|unique:users,email,'.$id;
+        return parent::update($request, $id);
+    }
 }

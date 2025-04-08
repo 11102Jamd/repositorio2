@@ -11,9 +11,9 @@ class Input extends Model
 
     protected $fillable = [
         'InputName',
-        'CurrentStock',
         'InitialQuantity',
         'UnitMeasurement',
+        'CurrentStock',
         'UnitMeasurementGrams',
         'UnityPrice'
     ];
