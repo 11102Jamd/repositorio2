@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Log;
 
 class Manufacturing extends Model
 {
@@ -56,6 +57,12 @@ class Manufacturing extends Model
                 throw new \Exception("Stock insuficiente para {$input->InputName}");
             }
 
+            if (($input->CurrentStock = $recipe['AmountSpent']) <= 200) {
+                $input->InitialQuantity = 0;
+                $input->save();
+                throw new \Exception("Stock Minimo: ".$input->InputName);
+            }
+
             $recipeModel = $this->recipes()->create([
                 'ID_inputs' => $input->id,
                 'AmountSpent' => $recipe['AmountSpent'],
@@ -70,11 +77,9 @@ class Manufacturing extends Model
             $input->decrement('CurrentStock', $recipe['AmountSpent']);
             $total += $subtotal;
         }
-
         $this->TotalCostProduction = $total + $this->Labour;
         $this->ManufactureProductG = $totalGrams;
         $this->save();
-
         return $this->fresh()->load('recipes.Input');
     }
 }

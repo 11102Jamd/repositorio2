@@ -32,14 +32,14 @@ class ManufacturingController extends BaseCrudController
             ]);
 
             $manufacturing->CalculateLabour();
-            
+
             $manufacturing->AddIngredients($validatedData['recipes']);
 
             DB::commit();
 
             return response()->json([
                 'Message' => "fabricacion creado exitosamente",
-                'OrdenCompra' => $manufacturing->fresh()->load('recipes')
+                'Fabricacion' => $manufacturing->fresh()->load('recipes')
             ], 201);
         } catch (\Throwable $th) {
             DB::rollBack();

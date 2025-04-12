@@ -16,7 +16,7 @@ class BaseCrudController extends Controller
     public function index()
     {
         try {
-            return response()->json($this->model::all());
+            return response()->json($this->model::OrderBy('id','desc')->get());
         } catch (\Throwable $th) {
             return response()->json([
                 'error' => 'Registros no encontrado',
