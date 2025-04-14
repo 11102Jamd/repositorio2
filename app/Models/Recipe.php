@@ -17,7 +17,8 @@ class Recipe extends Model
         'PriceQuantitySpent'
     ];
     protected $attributes = [
-        'PriceQuantitySpent' => 0
+        'PriceQuantitySpent' => 0,
+        'UnitMeasurement' => 'g'
     ];
 
     public function Manufacturing(): BelongsTo
@@ -38,17 +39,21 @@ class Recipe extends Model
             throw new \Exception("El insumo asociado no existe.");
         }
 
-        $AmountSpent = $this->AmountSpent;
+        $inputOrder = $this->Input->inputOrders()->first();
 
-        if ($input->UnitMeasurement == 'Kg') {
-            $AmountSpent = $AmountSpent / 1000;
-        } elseif ($input->UnitMeasurement == 'lb') {
-            $AmountSpent = $AmountSpent / 453.592;
+        if (!$inputOrder) {
+            throw new \Exception("No se encontro el insumo con su orden de compra");
         }
 
-        $PriceQuantitySpent = $AmountSpent * $input->UnityPrice;
+        $amountInOrderUnit = $this->AmountSpent;
 
-        return round($PriceQuantitySpent, 2);
+        if ($inputOrder->UnitMeasurement === 'Kg') {
+            $amountInOrderUnit = $this->AmountSpent / 1000;
+        } elseif ($inputOrder->UnitMeasurement === 'lb') {
+            $amountInOrderUnit = $this->AmountSpent / 453.592;
+        }
+
+        return round($amountInOrderUnit * $input->UnityPrice, 2);
     }
 
     public function RestoreStockInputs()

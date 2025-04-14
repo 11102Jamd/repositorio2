@@ -53,28 +53,28 @@ class Manufacturing extends Model
         foreach ($recipes as $recipe) {
             $input = Input::findOrFail($recipe['ID_inputs']);
 
+            $amountInGrams = $recipe['AmountSpent'];
+
             if ($input->CurrentStock < $recipe['AmountSpent']) {
                 throw new \Exception("Stock insuficiente para {$input->InputName}");
             }
 
-            if (($input->CurrentStock = $recipe['AmountSpent']) <= 200) {
-                $input->InitialQuantity = 0;
-                $input->save();
-                throw new \Exception("Stock Minimo: ".$input->InputName);
+            if (($input->CurrentStock - $recipe['AmountSpent']) <= 200) {
+                throw new \Exception("StocK Minimo: ".$input->InputName);
             }
 
             $recipeModel = $this->recipes()->create([
                 'ID_inputs' => $input->id,
-                'AmountSpent' => $recipe['AmountSpent'],
+                'AmountSpent' => $amountInGrams,
                 'UnitMeasurement' => 'g'
             ]);
 
             $subtotal = $recipeModel->PriceQuantitySpent();
-            $totalGrams += $recipe['AmountSpent'];
+            $totalGrams += $amountInGrams;
 
             $recipeModel->update(['PriceQuantitySpent' => $subtotal]);
 
-            $input->decrement('CurrentStock', $recipe['AmountSpent']);
+            $input->decrement('CurrentStock', $amountInGrams);
             $total += $subtotal;
         }
         $this->TotalCostProduction = $total + $this->Labour;
