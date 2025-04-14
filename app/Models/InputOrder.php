@@ -12,7 +12,14 @@ class InputOrder extends Model
     protected $fillable = [
         'ID_purchase_order',
         'ID_input',
+        'InitialQuantity',
+        'UnitMeasurement',
         'PriceQuantity'
+    ];
+
+    protected $attributes = [
+        'InitialQuantity' => 0,
+        'UnitMeasurement' => 'Kg',
     ];
 
     public function purchaseOrder(): BelongsTo

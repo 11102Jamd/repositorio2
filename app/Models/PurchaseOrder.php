@@ -48,8 +48,6 @@ class PurchaseOrder extends Model
 
             $input->increment('CurrentStock', $grams);
 
-            $input->InitialQuantity = $inputData['InitialQuantity'];
-            $input->UnitMeasurement = $inputData['UnitMeasurement'];
             $input->UnityPrice = $inputData['UnityPrice'];
             $input->save();
 
@@ -57,7 +55,9 @@ class PurchaseOrder extends Model
 
             $inputOrder = $this->inputOrders()->create([
                 'ID_input' => $input->id,
-                'PriceQuantity' => $subtotal
+                'PriceQuantity' => $subtotal,
+                'InitialQuantity' => $inputData['InitialQuantity'],
+                'UnitMeasurement' => $inputData['UnitMeasurement']
             ]);
 
             $total += $subtotal;

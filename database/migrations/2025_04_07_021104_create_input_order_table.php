@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('ID_purchase_order')->constrained('purchase_order')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('ID_input')->constrained('inputs')->onDelete('cascade')->onUpdate('cascade');
+            $table->integer('InitialQuantity');
+            $table->string('UnitMeasurement',10);
             $table->double('PriceQuantity',10,3);
             $table->timestamps();
         });

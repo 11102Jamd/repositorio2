@@ -11,16 +11,12 @@ class Input extends Model
 
     protected $fillable = [
         'InputName',
-        'InitialQuantity',
-        'UnitMeasurement',
         'CurrentStock',
         'UnitMeasurementGrams',
         'UnityPrice'
     ];
 
     protected $attributes = [
-        'InitialQuantity' => 0,
-        'UnitMeasurement' => 'Kg',
         'CurrentStock' => 0,
         'UnitMeasurementGrams' => 'g',
         'UnityPrice' => 0

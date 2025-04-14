@@ -14,8 +14,6 @@ return new class extends Migration
         Schema::create('inputs', function (Blueprint $table) {
             $table->id();
             $table->string('InputName',80);
-            $table->integer('InitialQuantity');
-            $table->string('UnitMeasurement',10);
             $table->integer('CurrentStock');
             $table->string('UnitMeasurementGrams',10);
             $table->double('UnityPrice',10,3);
